@@ -45,8 +45,9 @@
             <!-- avoids needing ant clean when changing interfaces -->
             <depend srcdir="${srcdir}" destdir="${destdir}" cache="${depcache}"/>
             <javac srcdir="@{srcdir}" destdir="@{destdir}" includeAntRuntime="no"
-                    debug="${compile.debug}" source="${sourceversion}">
+                    debug="${compile.debug}" source="${sourceversion}" encoding="UTF-8">
                 <compilerarg value="-Xlint:unchecked" />
+                <!--<compilerarg value="-encoding:UTF-8"/>-->
                 <!--<compilerarg value="-Xlint:deprecation" />-->
                 <compileoptions/>
             </javac>
@@ -75,7 +76,7 @@
     </taskdef>
 
     <target name="eclipse" description="Make current directory an eclipse
-    project">
+    project" >
         <echo file=".project" append="false">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;projectDescription&gt;
     &lt;name&gt;simpledb&lt;/name&gt;
