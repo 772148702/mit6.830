@@ -67,7 +67,8 @@ public class HeapPage implements Page {
     */
     private int getNumTuples() {        
         // some code goes here
-        return 0;
+
+        return (BufferPool.getPageSize()<<3)/((td.getSize()<<3)+1);
 
     }
 
@@ -78,7 +79,7 @@ public class HeapPage implements Page {
     private int getHeaderSize() {        
         
         // some code goes here
-        return 0;
+        return (numSlots+7)>>3;
                  
     }
     
@@ -112,7 +113,8 @@ public class HeapPage implements Page {
      */
     public HeapPageId getId() {
     // some code goes here
-    throw new UnsupportedOperationException("implement this");
+        return pid;
+
     }
 
     /**
@@ -282,7 +284,14 @@ public class HeapPage implements Page {
      */
     public int getNumEmptySlots() {
         // some code goes here
-        return 0;
+        int num = 0;
+
+        for (int i=0; i<numSlots; i++) {
+            if (!isSlotUsed(i)) {
+                num++;
+            }
+        }
+        return num;
     }
 
     /**
@@ -290,7 +299,7 @@ public class HeapPage implements Page {
      */
     public boolean isSlotUsed(int i) {
         // some code goes here
-        return false;
+        return 0 != (header[i>>3]&(1<<(i&7)));
     }
 
     /**
@@ -307,7 +316,29 @@ public class HeapPage implements Page {
      */
     public Iterator<Tuple> iterator() {
         // some code goes here
-        return null;
+        return new Iterator<Tuple>() {
+            private int idx = -1;
+
+            @Override
+            public boolean hasNext() {
+                while (idx+1<numSlots && !isSlotUsed(idx+1)) {
+                    idx++;
+                }
+                return idx+1<numSlots;
+            }
+            @Override
+            public Tuple next() {
+                if (hasNext()) {
+                    return tuples[++idx];
+                } else {
+                    throw new NoSuchElementException();
+                }
+            }
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 
 }

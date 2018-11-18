@@ -3,6 +3,12 @@ package simpledb;
 /** Unique identifier for HeapPage objects. */
 public class HeapPageId implements PageId {
 
+    public static HeapPageId valueOf(PageId pageId) {	/* newly-defined */
+        return new HeapPageId(pageId.getTableId(), pageId.getPageNumber());
+    }
+
+    int talbeId;
+    int pgNo;
     /**
      * Constructor. Create a page id structure for a specific page of a
      * specific table.
@@ -12,12 +18,14 @@ public class HeapPageId implements PageId {
      */
     public HeapPageId(int tableId, int pgNo) {
         // some code goes here
+        this.talbeId = tableId;
+        this.pgNo = pgNo;
     }
 
     /** @return the table associated with this PageId */
     public int getTableId() {
         // some code goes here
-        return 0;
+        return talbeId;
     }
 
     /**
@@ -26,7 +34,7 @@ public class HeapPageId implements PageId {
      */
     public int getPageNumber() {
         // some code goes here
-        return 0;
+        return pgNo;
     }
 
     /**
@@ -35,10 +43,17 @@ public class HeapPageId implements PageId {
      *   key in a hash table in the BufferPool, for example.)
      * @see BufferPool
      */
+//    public int hashCode() {
+//        // some code goes here
+//        throw new UnsupportedOperationException("implement this");
+//    }
+    @Override
     public int hashCode() {
-        // some code goes here
-        throw new UnsupportedOperationException("implement this");
+        int result = talbeId;
+        result = 31 * result + pgNo;
+        return result;
     }
+
 
     /**
      * Compares one PageId to another.
@@ -47,10 +62,23 @@ public class HeapPageId implements PageId {
      * @return true if the objects are equal (e.g., page numbers and table
      *   ids are the same)
      */
+//    public boolean equals(Object o) {
+//        // some code goes here
+//
+//        return false;
+//    }
+    @Override
     public boolean equals(Object o) {
-        // some code goes here
-        return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        HeapPageId that = (HeapPageId) o;
+
+        if (talbeId != that.talbeId) return false;
+        return pgNo == that.pgNo;
     }
+
+
 
     /**
      *  Return a representation of this object as an array of

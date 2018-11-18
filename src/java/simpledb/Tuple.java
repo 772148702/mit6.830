@@ -16,6 +16,7 @@ public class Tuple implements Serializable {
     private static final long serialVersionUID = 1L;
     TupleDesc td;
     List<Field> fieldValue;
+    RecordId rid;
     /**
      * Create a new tuple with the specified schema (type).
      *
@@ -48,7 +49,7 @@ public class Tuple implements Serializable {
      */
     public RecordId getRecordId() {
         // some code goes here
-        return null;
+        return rid;
     }
 
     /**
@@ -59,6 +60,7 @@ public class Tuple implements Serializable {
      */
     public void setRecordId(RecordId rid) {
         // some code goes here
+        this.rid = rid;
     }
 
     /**
@@ -83,7 +85,10 @@ public class Tuple implements Serializable {
      */
     public Field getField(int i) {
         // some code goes here
+        if(i<fieldValue.size())
         return fieldValue.get(i);
+        else
+            return null;
     }
 
     /**

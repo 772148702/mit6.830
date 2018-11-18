@@ -85,7 +85,7 @@ public class TupleDesc implements Serializable {
 
         list = new ArrayList<>();
         if(typeAr==null) return;
-        for (int i=0;i<typeAr.length;i++)
+        for(int i=0;i<typeAr.length;i++)
         {
             list.add(new TDItem(typeAr[i],null));
         }
@@ -110,7 +110,7 @@ public class TupleDesc implements Serializable {
      */
     public String getFieldName(int i) throws NoSuchElementException {
         // some code goes here
-
+        if(list.size()<=i) throw  new NoSuchElementException();
         return list.get(i).fieldName;
 //        return null;
     }
@@ -127,6 +127,7 @@ public class TupleDesc implements Serializable {
      */
     public Type getFieldType(int i) throws NoSuchElementException {
         // some code goes here
+        if(list.size()<=i) throw  new NoSuchElementException();
         return list.get(i).fieldType;
 //        return null;
     }
@@ -142,13 +143,15 @@ public class TupleDesc implements Serializable {
      */
     public int fieldNameToIndex(String name) throws NoSuchElementException {
         // some code goes here
+        if (name==null) throw new NoSuchElementException();
         for (int i=0;i<list.size();i++) {
-            if (list.get(i).fieldName.equals(name))
+            if (getFieldName(i).equals(name))
             {
                 return i;
             }
         }
         throw new NoSuchElementException();
+
     }
 
     /**
@@ -157,7 +160,12 @@ public class TupleDesc implements Serializable {
      */
     public int getSize() {
         // some code goes here
-        return list.size();
+        int ans = 0;
+        for (int i=0;i<list.size();i++)
+        {
+            ans = ans+list.get(i).fieldType.getLen();
+        }
+        return ans;
 //        return 0;
     }
 
@@ -174,11 +182,11 @@ public class TupleDesc implements Serializable {
     public static TupleDesc merge(TupleDesc td1, TupleDesc td2) {
         // some code goes here
         TupleDesc td = new TupleDesc(null);
-        for(int i=0;i<td1.getSize();i++)
+        for(int i=0;i<td1.list.size();i++)
         {
             td.list.add(new TDItem(td1.getFieldType(i),td1.getFieldName(i)));
         }
-        for (int i=0;i<td2.getSize();i++)
+        for (int i=0;i<td2.list.size();i++)
         {
             td.list.add(new TDItem(td2.getFieldType(i),td2.getFieldName(i)));
         }

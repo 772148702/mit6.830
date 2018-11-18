@@ -22,8 +22,27 @@ public class Catalog {
      * Constructor.
      * Creates a new, empty catalog.
      */
+
+    //先不考虑效率的话，我还是打算用列表来进行存储，毕竟这个样子显得比较简单
+
+    class TableInfo {
+        DbFile file;
+        String name;
+        String pkeyField;
+
+        public TableInfo(DbFile file, String name, String pkeyField) {
+            this.file = file;
+            this.name = name;
+            this.pkeyField = pkeyField;
+        }
+    }
+    //根据情况考虑要不要用线程安全的容器，或者声明为static
+    List<TableInfo> listInfo;
+    List<Integer>  tableId;
     public Catalog() {
         // some code goes here
+        listInfo = new ArrayList<>();
+        tableId  = new ArrayList<>();
     }
 
     /**
@@ -37,7 +56,31 @@ public class Catalog {
      */
     public void addTable(DbFile file, String name, String pkeyField) {
         // some code goes here
+        for(int i=0;i<listInfo.size();i++)
+        {
+            if(listInfo.get(i).name.equals(name))
+            {
+                TableInfo tmp = listInfo.get(i);
+                tmp.file = file;
+                tmp.pkeyField = pkeyField;
+                tableId.set(i,file.getId());
+                return;
+            }
+            if(listInfo.get(i).file.getId()==file.getId())
+            {
+                TableInfo tmp = listInfo.get(i);
+                tmp.file = file;
+                tmp.name = name;
+                tmp.pkeyField = pkeyField;
+                tableId.set(i,file.getId());
+                return;
+            }
+        }
+        listInfo.add(new TableInfo(file,name,pkeyField));
+        tableId.add(file.getId());
+        return;
     }
+
 
     public void addTable(DbFile file, String name) {
         addTable(file, name, "");
@@ -60,7 +103,18 @@ public class Catalog {
      */
     public int getTableId(String name) throws NoSuchElementException {
         // some code goes here
-        return 0;
+        if(name==null) throw new NoSuchElementException();
+
+        for (int i=0;i<listInfo.size();i++)
+        {
+            TableInfo tmp = listInfo.get(i);
+            if(tmp.name.equals(name))
+            {
+                return tmp.file.getId();
+            }
+        }
+        throw new NoSuchElementException();
+
     }
 
     /**
@@ -71,7 +125,15 @@ public class Catalog {
      */
     public TupleDesc getTupleDesc(int tableid) throws NoSuchElementException {
         // some code goes here
-        return null;
+        for (int i=0;i<listInfo.size();i++)
+        {
+            TableInfo tmp = listInfo.get(i);
+            if(tmp.file.getId()==tableid)
+            {
+                return tmp.file.getTupleDesc();
+            }
+        }
+       throw new NoSuchElementException();
     }
 
     /**
@@ -82,27 +144,52 @@ public class Catalog {
      */
     public DbFile getDatabaseFile(int tableid) throws NoSuchElementException {
         // some code goes here
-        return null;
+        for (int i=0;i<listInfo.size();i++)
+        {
+            TableInfo tmp = listInfo.get(i);
+            if(tmp.file.getId()==tableid)
+            {
+                return tmp.file;
+            }
+        }
+        throw new NoSuchElementException();
     }
 
     public String getPrimaryKey(int tableid) {
         // some code goes here
-        return null;
+        for (int i=0;i<listInfo.size();i++)
+        {
+            TableInfo tmp = listInfo.get(i);
+            if(tmp.file.getId()==tableid)
+            {
+                return tmp.pkeyField;
+            }
+        }
+        throw new NoSuchElementException();
     }
 
     public Iterator<Integer> tableIdIterator() {
         // some code goes here
-        return null;
+        return tableId.iterator();
     }
 
     public String getTableName(int id) {
         // some code goes here
-        return null;
+        for(int i=0;i<listInfo.size();i++)
+        {
+            if(listInfo.get(i).file.getId()==id)
+            {
+                return listInfo.get(i).name;
+            }
+        }
+      return null;
     }
     
     /** Delete all tables from the catalog */
     public void clear() {
         // some code goes here
+        listInfo.clear();
+        tableId.clear();
     }
     
     /**

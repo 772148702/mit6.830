@@ -25,6 +25,7 @@ public class BufferPool {
     other classes. BufferPool should use the numPages argument to the
     constructor instead. */
     public static final int DEFAULT_PAGES = 50;
+    private  Page[] buffer;
 
     /**
      * Creates a BufferPool that caches up to numPages pages.
@@ -33,6 +34,7 @@ public class BufferPool {
      */
     public BufferPool(int numPages) {
         // some code goes here
+        buffer = new Page[numPages];
     }
     
     public static int getPageSize() {
@@ -67,6 +69,23 @@ public class BufferPool {
     public  Page getPage(TransactionId tid, PageId pid, Permissions perm)
         throws TransactionAbortedException, DbException {
         // some code goes here
+        int idx = -1;
+        for(int i=0;i<buffer.length;i++)
+        {
+            if(idx==-1&&buffer[i]==null)
+            {
+                idx = i;
+            }
+            if(buffer[i]!=null&&pid.equals(buffer[i].getId()))
+            {
+                return buffer[i];
+            }
+        }
+        if(idx!=-1)
+        {
+           return buffer[idx] = Database.getCatalog().getDatabaseFile
+                    (pid.getTableId()).readPage(pid);
+        }
         return null;
     }
 
